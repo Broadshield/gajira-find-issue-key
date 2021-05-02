@@ -1,113 +1,130 @@
 name: Jira Find issue key
 description: Find an issue inside event
 branding:
-  icon: 'book-open'
-  color: 'blue'
+    icon: 'book-open'
+    color: 'blue'
 inputs:
-  event:
-    description: Provide jsonpath for the GitHub event to extract issue from
-    required: false
-  string:
-    description: Provide a string to extract issue key from
-    required: false
-  from:
-    description: >
-      Find from predefined place.
-      Should be either 'branch', 'pull_request', or 'commits', default is 'commits'
-    required: false
-    default: commits
-  returns:
-    default: first
-    description: >
-      Options can be: 'first', or 'all'
+    string:
+        description: Provide a string to extract issue key from
+        required: false
+    from:
+        description: >
+            Find from predefined place.
+            Should be either 'branch', 'pull_request', or 'commits', default is 'commits'
+        required: false
+        default: commits
+    returns:
+        default: first
+        description: >
+            Options can be: 'first', or 'all'
 
-      This variable controls both how many results are returned, 
-      and how many results are processed.
+            This variable controls both how many results are returned, 
+            and how many results are processed.
 
-      If the 'from' variable is 'pull_request', and this 'returns' variable is 'all',
-      then base-ref defaults to the pull_request.base.ref, 
-      and the head-ref defaults to pull_request.head.ref from the github event.
+            If the 'from' variable is 'pull_request', and this 'returns' variable is 'all',
+            then base-ref defaults to the pull_request.base.ref, 
+            and the head-ref defaults to pull_request.head.ref from the github event.
 
-      NOTE: This action originally returned only the first Jira Ticket ID found.
-      For backwards compatibility the default is set to 'first'.
-    required: false
-  head-ref:
-    description: >
-      The Git Head Ref to which commit messages will be collected up to.
-      If the base-ref is included, and the github event is a pull_request or push,
-      The head-ref from the event will be used.
-    required: false
-  base-ref:
-    description: >
-      The Git Base Ref to which commit messages will be collected up from.
-      If the base-ref is not included,
-    required: false
-  standardize-pr-title:
-    description: >
-      Collects the Jira issue numbers from the Pull Request, and puts them at the start of the PR title.
-      Trims to 70 characters, i.e:
-        MYISSUE-123, MYISSUE-124: Resolve callback error, and fix typo
-    required: false
-    default: 'false'
-  include-merge-messages:
-    description: >
-      When parsing commit messages, include merge and pull messages.
-      This is disabled by default, to exclude tickets that may be included
-      or fixed in other branches or pull requests.
-    required: false
-  generate-github-milestones:
-    description: >
-      Create GitHub Milestones from the Jira Issue' sprints
-    default: 'false'
-    required: false
-  generate-github-issues:
-    description: >
-      When a Jira Issue is found, the existing list of GitHub issues is iterated through,
-      and if a GitHub issue starts with the Jira Issue Key, then the Github Issue is
-      updated with details from the Jira issue.
-      If the Github issue doesn't exist, the GitHub issue is created.
+            NOTE: This action originally returned only the first Jira Ticket ID found.
+            For backwards compatibility the default is set to 'first'.
+        required: false
 
-      If 'generate-github-milestones' is 'true', then the GitHub issue is linked to the milestone.
+    head-ref:
+        description: >
+            The Git Head Ref to which commit messages will be collected up to.
+            If the base-ref is included, and the github event is a pull_request or push,
+            The head-ref from the event will be used.
+        required: false
+    base-ref:
+        description: >
+            The Git Base Ref to which commit messages will be collected up from.
+            If the base-ref is not included,
+        required: false
+    standardize-pr-title:
+        description: >
+            Collects the Jira issue numbers from the Pull Request, and puts them at the start of the PR title.
+            Trims to 70 characters, i.e:
+              MYISSUE-123, MYISSUE-124: Resolve callback error, and fix typo
+        required: false
+        default: 'false'
+    include-merge-messages:
+        description: >
+            When parsing commit messages, include merge and pull messages.
+            This is disabled by default, to exclude tickets that may be included
+            or fixed in other branches or pull requests.
+        required: false
+    generate-github-milestones:
+        description: >
+            Create GitHub Milestones from the Jira Issue' sprints
+        default: 'false'
+        required: false
+    generate-github-issues:
+        description: >
+            When a Jira Issue is found, the existing list of GitHub issues is iterated through,
+            and if a GitHub issue starts with the Jira Issue Key, then the Github Issue is
+            updated with details from the Jira issue.
+            If the Github issue doesn't exist, the GitHub issue is created.
 
-      If this action is triggered through a pull_request event, then when the pull_request
-      is closed, and merged, the GitHub issues are also closed, by adding 'Resolves #<IssueNumber>' 
-      syntax on the pull_request body
+            If 'generate-github-milestones' is 'true', then the GitHub issue is linked to the milestone.
 
-    default: 'false'
-    required: false
-  jira-transition-chain:
-    description: >
-      A comma separated list of all allowed Jira Transitions in order
-    required: false
-  jira-transition-on-new-branch:
-    description: >
-      The name of the transition to apply when a new branch is created
-    required: false
-  jira-transition-on-pr-open:
-    description: >
-      The name of the transition to apply when a Pull Request is opened
-    required: false
-  jira-transition-on-pr-approval:
-    description: >
-      The name of the transition to apply when a Pull Request is approved
-    required: false
-  jira-transition-on-pr-merge:
-    description: >
-      The name of the transition to apply when a Pull Request is closed and merged
-    required: false
-  github-token:
-    description: GitHub Token used for authentication
-    required: false
+            If this action is triggered through a pull_request event, then when the pull_request
+            is closed, and merged, the GitHub issues are also closed, by adding 'Resolves #<IssueNumber>' 
+            syntax on the pull_request body
+
+        default: 'false'
+        required: false
+    jira-transition-chain:
+        description: >
+            A comma separated list of all allowed Jira Transitions in order
+        required: false
+    jira-transition-on-new-branch:
+        description: >
+            The name of the transition to apply when a new branch is created
+        required: false
+    jira-transition-on-pr-open:
+        description: >
+            The name of the transition to apply when a Pull Request is opened
+        required: false
+    jira-transition-on-pr-approval:
+        description: >
+            The name of the transition to apply when a Pull Request is approved
+        required: false
+    jira-transition-on-pr-merge:
+        description: >
+            The name of the transition to apply when a Pull Request is closed and merged
+        required: false
+    fix-version:
+        description: >
+            The Jira Fix Version that the Jira Issues found will be assigned.
+        required: false
+    github-token:
+        description: GitHub Token used for authentication
+        required: true
+
+    create-gist-output-named:
+        description: >
+            Options can be: 'first', or 'all'
+
+            This variable controls both how many results are returned, 
+            and how many results are processed.
+
+            If the 'from' variable is 'pull_request', and this 'returns' variable is 'all',
+            then base-ref defaults to the pull_request.base.ref, 
+            and the head-ref defaults to pull_request.head.ref from the github event.
+
+            NOTE: This action originally returned only the first Jira Ticket ID found.
+            For backwards compatibility the default is set to 'first'.
+        required: false
 
 outputs:
-  issue:
-    description: Key of the found issue
-  issues:
-    description: Keys of the found issues as comma separated list
-  gist-url:
-    description: The url to the generated Gist
-  gist-name:
-    description: The name of the Gist created
+    issue:
+        description: Key of the found issue
+    issues:
+        description: Keys of the found issues as comma separated list
+    gist-url:
+        description: The url to the generated Gist
+    gist-name:
+        description: The name of the Gist created
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+    using: 'node12'
+    main: 'dist/index.js'

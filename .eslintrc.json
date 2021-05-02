@@ -1,36 +1,41 @@
 {
-  "plugins": ["simple-import-sort", "jest", "import", "github"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "plugin:prettier/recommended",
-    "@atlassian-partner-engineering",
-    "plugin:github/recommended",
-    "plugin:jest/all"
-  ],
-  "rules": {
-    "no-plusplus": "off",
-    "import/no-namespace": "off",
-    "no-unused-vars": "off",
-    "import/first": "error",
-    "import/newline-after-import": "error",
-    "import/no-duplicates": "error",
-    "simple-import-sort/imports": "error",
-    "sort-imports": "off",
-    "semi": "off",
-    "camelcase": "off",
-    "security/detect-unsafe-regex": "off",
-    "security/detect-non-literal-regexp": "off",
-    "security/detect-non-literal-require": "off",
-    "security/detect-non-literal-fs-filename": "off"
-  },
-  "env": {
-    "node": true,
-    "jest": true,
-    "es2021": true,
-    "es6": true,
-    "jest/globals": true
-  }
+    "plugins": ["simple-import-sort", "jest", "import", "github"],
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        "plugin:prettier/recommended",
+        "@atlassian-partner-engineering",
+        "plugin:github/recommended",
+        "plugin:jest/all"
+    ],
+    "env": {
+        "commonjs": true,
+        "es6": true,
+        "jest": true,
+        "node": true
+    },
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "no-plusplus": "off",
+        "import/no-namespace": "off",
+        "no-unused-vars": "off",
+        "import/first": "error",
+        "import/newline-after-import": "error",
+        "import/no-duplicates": "error",
+        "simple-import-sort/imports": "error",
+        "sort-imports": "off",
+        "semi": "off",
+        "camelcase": "off",
+        "security/detect-unsafe-regex": "off",
+        "security/detect-non-literal-regexp": "off",
+        "security/detect-non-literal-require": "off",
+        "security/detect-non-literal-fs-filename": "off"
+    }
 }

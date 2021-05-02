@@ -21,9 +21,9 @@ async function writeKey(result) {
   core.debug(`Saving ${result.get('key')} to ${configPath}`)
 
   // Expose created issue's key as an output
-
+  const _config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
   const yamledResult = YAML.stringify(result)
-  const extendedConfig = { ...config, ...result }
+  const extendedConfig = { ..._config, ...result }
 
   fs.writeFileSync(configPath, YAML.stringify(extendedConfig))
 
@@ -39,30 +39,30 @@ async function exec() {
     }).execute()
 
     if (result) {
-      core.debug(`Result was returned.`)
       if (Array.isArray(result)) {
         core.debug('Result is an array')
+
         const outputIssues = []
 
         for (const item of result) {
           await writeKey(item)
           outputIssues.push(item.get('key'))
         }
-
-        core.setOutput('issues', outputIssues.join(','))
+        const issueListString = outputIssues.join(',')
+        core.setOutput('issues', issueListString)
 
         return
       }
-      core.debug('Result is not an array')
-      core.setOutput('issue', result.get('key'))
+      const issueKey = result.get('key')
+      core.setOutput('issue', issueKey)
+      core.setOutput('issues', [issueKey])
 
       return await writeKey(result)
     }
 
     core.debug('No issueKeys found.')
-    core.setNeutral()
   } catch (error) {
-    core.setFailed(error.toString())
+    core.setFailed(error)
   }
 }
 
@@ -70,10 +70,8 @@ function parseArgs() {
   const fromList = ['commits', 'pull_request', 'branch']
 
   return {
-    event: core.getInput('event') || config.event,
     string: core.getInput('string') || config.string,
     from: fromList.includes(core.getInput('from')) ? core.getInput('from') : 'commits',
-    githubToken: core.getInput('github-token'),
     headRef: core.getInput('head-ref'),
     baseRef: core.getInput('base-ref'),
     includeMergeMessages: core.getInput('include-merge-messages') === 'true',
@@ -86,6 +84,10 @@ function parseArgs() {
     transitionOnPrOpen: core.getInput('jira-transition-on-pr-open'),
     transitionOnPrApproval: core.getInput('jira-transition-on-pr-approval'),
     transitionOnPrMerge: core.getInput('jira-transition-on-pr-merge'),
+    gist_private: core.getInput('gist-private') === 'true',
+    gist_name: core.getInput('create-gist-output-named'),
+    jiraTransition: core.getInput('jira-transition'),
+    fixVersion: core.getInput('fix-version'),
   }
 }
 

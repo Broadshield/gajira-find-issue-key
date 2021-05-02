@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 const core = require('@actions/core')
 
 module.exports = class {
@@ -9,7 +7,7 @@ module.exports = class {
  * @param {string} input - Jira markup text
  * @returns {string} - Markdown formatted text
  */
-  toM (inputText) {
+  toM(inputText) {
     let input = inputText.replace(/^h([0-6])\.(.*)$/gm, (match, level, content) => Array(parseInt(level, 10) + 1).join('#') + content)
 
     input = input.replace(/([*_])(.*)\1/g, (match, wrapper, content) => {
@@ -36,7 +34,6 @@ module.exports = class {
     const lines = input.split(/\r?\n/gm)
 
     for (let i = 0; i < lines.length; i++) {
-      // eslint-disable-next-line camelcase
       const line_content = lines[i]
 
       const separators = line_content.match(/\|\|/g)
@@ -74,7 +71,7 @@ module.exports = class {
        * @param {string} input
        * @returns {string}
        */
-  toJ (inputText) {
+  toJ(inputText) {
     // remove sections that shouldn't be recursively processed
     const START = 'J2MBLOCKPLACEHOLDER'
     const replacementsList = []

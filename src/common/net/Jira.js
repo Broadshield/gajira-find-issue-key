@@ -1,7 +1,6 @@
 const { get } = require('lodash')
 
 const serviceName = 'jira'
-const { format } = require('url')
 const client = require('./client')(serviceName)
 
 class Jira {
@@ -11,11 +10,27 @@ class Jira {
     this.email = email
   }
 
+  async getCreateMeta(query, version = '2') {
+    return this.fetch('getCreateMeta', { pathname: `/rest/api/${version}/issue/createmeta`, query })
+  }
+
+  async getUpdateMeta(query, version = '2') {
+    return this.fetch('getUpdateMeta', { pathname: `/rest/api/${version}/issue/updatemeta`, query })
+  }
+
   async createIssue(body, version = '2') {
     return this.fetch(
       'createIssue',
       { pathname: `/rest/api/${version}/issue` },
       { method: 'POST', body },
+    )
+  }
+
+  async deleteIssue(issue, version = '3') {
+    return this.fetch(
+      'deleteIssue',
+      { pathname: `/rest/api/${version}/issue/${issue}` },
+      { method: 'DELETE' },
     )
   }
 
@@ -53,7 +68,7 @@ class Jira {
     )
   }
 
-  async transitionIssue(issueId, data, version = '3') {
+  async transitionIssue(issueId, data, version = '2') {
     return this.fetch(
       'transitionIssue',
       {
@@ -67,11 +82,12 @@ class Jira {
   }
 
   async fetch(apiMethodName, { host, pathname, query }, { method, body, headers = {} } = {}) {
-    const url = format({
-      host: host || this.baseUrl,
-      pathname,
-      query,
-    })
+    const urlFormat = new URL(host || this.baseUrl)
+    urlFormat.port = 443
+    urlFormat.pathname = pathname
+    urlFormat.search = new URLSearchParams(query).toString()
+
+    const url = urlFormat.href
 
     if (!method) {
       method = 'GET'
@@ -116,7 +132,11 @@ class Jira {
 
       delete state.req.headers
 
-      throw Object.assign(new Error(`Jira API error: ${error}`), state, fields)
+      throw Object.assign(
+        new Error(`Jira API error: ${error}, ${JSON.stringify(state, null, ' ')}`),
+        state,
+        fields,
+      )
     }
 
     return state.res.body
